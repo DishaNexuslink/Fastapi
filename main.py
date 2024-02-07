@@ -1,8 +1,7 @@
-from fastapi import FastAPI, Request,HTTPException,Form 
+from fastapi import FastAPI, Request,HTTPException,Form,File,UploadFile
 from enum import Enum
-from pydantic import BaseModel
 
-
+from schemaFile  import schema
 app=FastAPI()
 
 # ------greetings-------
@@ -53,12 +52,34 @@ def details(name:str,number:int):
 
 # -----------defining scema and use of forms in fastAPI
 
-class schema(BaseModel):
-    username:str
-    Mobile_Number:int
+
 
 @app.post("/form/data")
 def form_data(data:schema):
     return {"username":data.username,"Mobile_Number":data.Mobile_Number}
 
-# -------------
+# -------------file upload------
+@app.post("/file/bytes")
+def file_data(file:bytes=File()):
+    return {"file":len(file)}
+
+@app.post("/file")
+async def file_info(file1: UploadFile = UploadFile(...),file2: UploadFile = UploadFile(...)):
+    # contents = await file.read()
+    
+    # # Try decoding with different encodings
+    # encodings_to_try = ["utf-8", "latin-1", "iso-8859-1", "windows-1252"]  
+    # decoded_contents = None
+    # for encoding in encodings_to_try:
+    #     try:
+    #         decoded_contents = contents.decode(encoding)
+    #         break
+    #     except UnicodeDecodeError:
+    #         continue
+    
+    # if decoded_contents is None:
+    #     return {"error": "Unable to decode file contents with any encoding"}
+    
+    return {"filename1": file1.filename,"filename2": file2.filename}
+
+
